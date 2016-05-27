@@ -19,6 +19,10 @@ Run the following in a bash shell:
 ### Example: Installing BMC Lift with Optional Arguments
 ```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
 
+### Installation Directory
+
+`/opt/bmc/lift/installer`
+
 ## Configuring a Spinnaker Stack Outside of BMC Lift
 
 In the event that a Spinnaker configuration is not supported by BMC Lift, a Spinnaker stack that was deployed and configured via Lift can be reconfigured manually be following these steps:

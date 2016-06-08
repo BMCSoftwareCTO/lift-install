@@ -9,15 +9,25 @@ Run the following in a bash shell:
 ### Optional Arguments
 
 ```
--install_type <value>                                // MASTER, NODE, BOTH  (default is ‘BOTH’)
+--install_type <value>                               // MASTER, NODE, BOTH  (default is ‘BOTH’)
+                                                     // If selecting NODE, please provide other parameters: 
+                                                     // master_hostname and sky_dns_ip
 --master_hostname <value>                            // this is needed when the type is ‘NODE’
 --sky_dns_ip <value>                                 // this is needed when the type is ‘NODE’
---port_range <a string with space separated values>  // this is when you specify ports for UI/api for lift
---ui_port <value>
---api_port <value>
+                                                     // This can be obtained from MASTET/BOTH installenv.out file.
+                                                     // Look for "SKY_DNS_CLUSTER_IP" in the install log.
+                                                     // It is typically located at /opt/bmc/lift/logs/
+--port_range <min max>                               // this is when you specify port range for lift (default: 8000 9999)
+--ui_port <value>                                    // this should fall with in the port_range (default: 8000)
+--api_port <value>                                   // this should fall with in the port_range (default: 9080)
+--aws_port <value>                                   // this should fall with in the port_range (default: 9081)
+--help                                               // this will display help info 
 ```
 ### Example: Installing BMC Lift with Optional Arguments
 ```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
+
+### Example: Installing BMC Lift NODE only
+```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
 
 ### Installation Directory
 
@@ -25,7 +35,7 @@ Run the following in a bash shell:
 
 ## Configuring a Spinnaker Stack Outside of BMC Lift
 
-In the event that a Spinnaker configuration is not supported by BMC Lift, a Spinnaker stack that was deployed and configured via Lift can be reconfigured manually be following these steps:
+In the event that a Spinnaker configuration is not supported by BMC Lift, a Spinnaker stack that was deployed and configured via Lift can be reconfigured manually by following these steps:
 
 On machine where BMC Lift is installed perform the following steps:
 

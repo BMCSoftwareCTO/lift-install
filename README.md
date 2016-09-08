@@ -2,9 +2,11 @@
 
 ## Installing BMC Lift
 
+DockerHub credentials and registered e-mail address are required to install Lift.
+
 Run the following in a bash shell:
 
-`LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/liftinstall.sh | bash`
+`wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --reg_user <DockerHub user>" --reg_password "<DockerHub password>" --reg_email "<DockerHub registered e-mail address>"`
 
 ### Optional Arguments
 

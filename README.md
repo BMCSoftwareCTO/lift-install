@@ -11,25 +11,63 @@ Run the following in a bash shell:
 ### Optional Arguments
 
 ```
---install_type <value>                               // MASTER, NODE, BOTH  (default is ‘BOTH’)
-                                                     // If selecting NODE, please provide other parameters: 
-                                                     // master_hostname and sky_dns_ip
---master_hostname <value>                            // this is needed when the type is ‘NODE’
---sky_dns_ip <value>                                 // this is needed when the type is ‘NODE’
-                                                     // This can be obtained from MASTET/BOTH installenv.out file.
-                                                     // Look for "SKY_DNS_CLUSTER_IP" in the install log.
-                                                     // It is typically located at /opt/bmc/lift/logs/
---port_range <min max>                               // this is when you specify port range for lift (default: 8000 9999)
---ui_port <value>                                    // this should fall with in the port_range (default: 8000)
---api_port <value>                                   // this should fall with in the port_range (default: 9080)
---aws_port <value>                                   // this should fall with in the port_range (default: 9081)
---help                                               // this will display help info 
+    --help                      // this will display help info 
+    --install_type <arg>        // Default is "BOTH". 
+                                // NODE: Installs a kubernetes node. If selecting NODE, 
+                                // please provide other parameters: master_hostname, 
+                                // sky_dns_ip
+    --master_hostname <arg>     // This is required when doing NODE installation
+    --sky_dns_ip <arg>          // This is required when doing NODE installation. This 
+                                // can be obtained from MASTER/BOTH installenv.out file.
+                                // Look for "SKY_DNS_CLUSTER_IP" in the install log.
+                                // Install log is typically located at /opt/bmc/lift/logs/
+    --reg_user <arg>            // Docker registry user login for accessing BMC docker 
+                                // images.
+    --reg_password <arg>        // Docker registry user password for accessing BMC docker 
+                                // images.
+    --reg_email <arg>           // Docker registry user email.
+    --dbdir <arg>               // Default is /. If specified, lift and spinnaker db files will be
+                                // created under the specified directory. The directory will be created
+                                // if it doesn't exist.    
+    --ui_port <arg>             // Default is 8000. This is for spyglass client UI.
+    --api_port <arg>            // Default is 9080. This is for admiral service.
+    --aws_port <arg>            // Default is 9081. This is for aws service.
+    --ssh_port <arg>            // Default is 9082. This is for ssh service.
+    --port_range <arg>          // Default is "8000 9999"
+                                // Used to configure kubernetes api service where NodePort is 
+                                // used. This should be a string with min and max port range 
+                                // separated by space
+                                // Example: "8001 9001"
+    --insecure_regs <arg>       // Internal usage. For specifying one or more insecure docker
+                                // registries where the lift related docker images will be pulled
+                                // from. It should be in this format:
+                                // "<ip:port>,<ip2:port>..."
+                                // Example: "52.27.155.9:5000,172.22.238.229:5000"
+    --lift_aws_url <arg>        // Internal usage. For specifying aws service docker
+                                // image url.
+                                // Example: 
+                                // "clm-aus-008240.bmc.com:5000/lift-dev/ssh:22"
+    --lift_admiral_url <arg>    // Internal usage. For specifying admiral service docker
+                                // image url.
+    --lift_spyglass_url <arg>   // Internal usage. For specifying spyglass service docker
+                                // image url.
+    --lift_ssh_url <arg>        // Internal usage. For specifying ssh service docker
+                                // image url.
+    --lift_cassandra_url <arg>  // Internal usage. For specifying cassandra docker
+                                // image url.
+    --dbnode true/false         // Deprecated.
+    --lift_download_url <arg>   // Default: https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest
+                                // Specifies where admiral will be downloading
+                                // lift installer from for remote hosts.
 ```
+### Example: To see help:
+wget -O - http://clm-aus-008240:8080/userContent/testliftinstallers/liftinstall.sh  | bash -s -- --help
+
 ### Example: Installing BMC Lift with Optional Arguments
-```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
+```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
 
 ### Example: Installing BMC Lift NODE only
-```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/v0.0.1-alpha/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
+```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
 
 ### Installation Directory
 

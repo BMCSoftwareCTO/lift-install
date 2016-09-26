@@ -60,14 +60,14 @@ Run the following in a bash shell:
                                 // Specifies where admiral will be downloading
                                 // lift installer from for remote hosts.
 ```
-### Example: To see help:
-wget -O - http://clm-aus-008240:8080/userContent/testliftinstallers/liftinstall.sh  | bash -s -- --help
-
 ### Example: Installing BMC Lift with Optional Arguments
-```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
+```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
 
 ### Example: Installing BMC Lift NODE only
-```LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
+```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
+
+### Example: To see installer help
+```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh  | bash -s -- --help```
 
 ### Installation Directory
 

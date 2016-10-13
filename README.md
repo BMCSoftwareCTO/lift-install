@@ -80,12 +80,12 @@ In the event that a Spinnaker configuration is not supported by BMC Lift, a Spin
 
 On machine where BMC Lift is installed perform the following steps:
 
-* Connect to Admiral container
+* Retrieving Amidral container ID
   * Run `docker ps | grep admiral` and obtain the Admiral container ID
 * Copy template files from Admiral container
   * Run `mkdir spkr-templates`
   * Run `cd spkr-templates`
-  * Run `docker cp <Admiral container ID>/opt/bmc/lift/kube/spinnaker/templates .`
+  * Run `docker cp <Admiral container ID>:/opt/bmc/lift/kube/spinnaker/templates .`
 * Edit Spinnaker yaml configurations
   * `cd config`
   * Edit config yaml as needed

@@ -2,7 +2,7 @@
 
 ## Installing BMC Lift
 Prerequisite:
-- DockerHub credentials and registered e-mail address are required to install Lift.
+- DockerHub credentials and registered e-mail address are required to install Lift (** passwords cannot contain ! **)
 - Centos 6.x or 7.x system with 16GB RAM
 
 Run the following in a bash shell as root:

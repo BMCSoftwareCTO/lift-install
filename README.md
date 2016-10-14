@@ -7,7 +7,7 @@ Prerequisite:
 
 Run the following in a bash shell as root:
 
-`wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --reg_user <DockerHub user>" --reg_password "<DockerHub password>" --reg_email "<DockerHub registered e-mail address>"`
+`wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password "<DockerHub password>" --reg_email "<DockerHub registered e-mail address>"`
 
 ### Optional Arguments
 

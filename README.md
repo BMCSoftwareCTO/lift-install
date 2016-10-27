@@ -105,3 +105,176 @@ On machine where BMC Lift is installed perform the following steps:
   * Run `cd spkr-templates`
   * Run `bash scripts/update-config.sh`
   * Run `bash scripts/update-spinnaker.sh`
+
+## Manually Updating Lift Service Versions
+
+Connect to the machine hosting the Lift application. Perform the following as root.
+
+* `cd /opt/bmc/lift/installer.tmp/kubernetes/lift/rcs`
+  * Make backups of *.yaml
+    * lift-admiral-rc.yaml
+    * lift-api-rc.yaml
+    * lift-aws-rc.yaml
+    * lift-oauth-rc.yaml
+    * lift-ssh-rc.yaml
+    * lift-cassandra-rc.yaml
+    * lift-spyglass-rc.yaml
+  * Get existing Docker images versions
+    * `curl https://github.com/BMCSoftwareCTO/lift-install/releases/download/lift-versions/snapshots.json`
+    * Each entry looks like:
+    ```
+			    {
+			        "0.0.1-sprint.30": {
+			            "api": "bmcsoftware/lift-api:0.0.1-sprint.30",
+			            "oauth": "bmcsoftware/lift-oauth-server:0.0.1-sprint.30",
+			            "admiral": "bmcsoftware/lift-admiral:0.0.1-sprint.30",
+			            "spyglass": "bmcsoftware/lift-spyglass:0.0.1-sprint.30",
+			            "aws": "bmcsoftware/lift-aws:0.0.1-sprint.30",
+			            "ssh": "bmcsoftware/lift-ssh:0.0.1-sprint.30",
+			            "cassandra": "bmcsoftware/lift-cassandra:0.0.1-sprint.30"
+			        },
+			        "timestamp": 1477517811620
+			    }
+    ```
+  * Edit each lift-XXX-rc.yaml file and replace the "image" property with the Docker image path desired
+    * e.g. for lift-aws-rc.yaml
+      * From
+        * `image: bmcsoftware/lift-aws:latest`
+      * To
+        * `image: bmcsoftware/lift-aws:0.0.1-sprint.30`
+  * Use kubectl to delete each of the Lift Kubernetes replication controllers (rc)
+    * e.g.
+      * `kubectl delete rc/aws --namespace=bmclift-ns`
+  * Create the rcs from the lift-XXX-rc.yaml files
+    * e.g.
+      * `kubectl create -f lift-aws-rc.yaml`
+      
+Kubernetes will pull the new path for the Docker images for each of the Lift rcs
+
+## Manually Updating Spinnaker Service Versions
+
+* Get admiral CLUSTER-IP
+  * kubectl get svc --namespace=bmclift-ns
+    * e.g.
+    ```
+		NAME                CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+		svc/admiral-svc     10.254.115.22    <none>        9083/TCP   4h
+		svc/api-svc         10.254.146.148   <nodes>       9080/TCP   4h
+		svc/aws-svc         10.254.247.5     <none>        9081/TCP   4h
+		svc/cassandra-svc   10.254.75.236    <none>        9042/TCP   4h
+		svc/oauth-svc       10.254.126.122   <nodes>       8080/TCP   4h
+		svc/spyglass-svc    10.254.39.138    <nodes>       8000/TCP   4h
+		svc/ssh-svc         10.254.155.21    <none>        9082/TCP   4h
+    ```
+* List Spinnaker instances to a file
+  * e.g.
+    * `curl http://10.254.115.22:9083/v1/spinnakers >spinnakers.json`
+    * Use a JSON-pretty tool to make it readable
+      * e.g.
+      ```
+			[
+			  {
+			    "id": "11bcc9a0-9c84-11e6-8fab-316805b20aec",
+			    "name": "192.168.217.129",
+			    "status": "Failed",
+			    "size": "small",
+			    "deckurl": "http://192.168.217.129:9000",
+			    "providers": [
+			      "11abb2a0-9c84-11e6-8fab-316805b20aec",
+			      "ef4d05b0-9c83-11e6-8fab-316805b20aec"
+			    ],
+			    "accounts": [
+			      "11ac27d0-9c84-11e6-8fab-316805b20aec",
+			      "ef4c6970-9c83-11e6-8fab-316805b20aec"
+			    ],
+			    "credentials": null,
+			    "hosts": [
+			      "10d576e0-9c84-11e6-8fab-316805b20aec"
+			    ],
+			    "integrations": null,
+			    "notifications": null,
+			    "authentications": null,
+			    "deckHost": "192.168.217.129",
+			    "namespace": "spinnaker-192168217129-1477600173141",
+			    "gatePort": "8084",
+			    "deckPort": "9000",
+			    "roscoPort": "8087"
+			  }
+			]
+      ```
+* Pick Spinnaker instance id where the name attribute matches the Spinnaker stack whose Docker images are to be updated
+  * e.g.
+    * ```"id": "11bcc9a0-9c84-11e6-8fab-316805b20aec",```
+* Get Lift admiral Docker image path
+  * `kubectl get po --namespace=bmclift-ns | grep admiral`
+    * e.g.
+        ```admiral-z0tnp     1/1       Running   0          2h```
+* `kubectl get po/admiral-z0tnp -o jsonpath={.spec.containers[*].image} --namespace=bmclift-ns`
+  * e.g.
+        ```192.168.217.129:5000/cholin/lift-admiral:latest```
+* Copy Spinnaker rc files for Spinnaker stack from admiral Docker container to current directory (tmp)
+  * `docker cp $(docker ps | grep 192.168.217.129:5000/cholin/lift-admiral:latest | awk '{print $1;}'):/opt/bmc/lift/kube/spinnaker/templates/11bcc9a0-9c84-11e6-8fab-316805b20aec/rcs/. .`
+* Get manifest of Spinnaker Docker image versions
+  * `curl https://github.com/BMCSoftwareCTO/lift-install/releases/download/spkr-versions/snapshots.json`
+  * Each entry looks like:
+```
+        {
+            "0.0.1-sprint.30": {
+                "clouddriver": "bmcsoftware/spinnaker-clouddriver:0.0.1-sprint.30",
+                "deck": "bmcsoftware/spinnaker-deck:0.0.1-sprint.30",
+                "echo": "bmcsoftware/spinnaker-echo:0.0.1-sprint.30",
+                "front50": "bmcsoftware/spinnaker-front50:0.0.1-sprint.30",
+                "gate": "bmcsoftware/spinnaker-gate:0.0.1-sprint.30",
+                "igor": "bmcsoftware/spinnaker-igor:0.0.1-sprint.30",
+                "orca": "bmcsoftware/spinnaker-orca:0.0.1-sprint.30",
+                "rosco": "bmcsoftware/spinnaker-rosco:0.0.1-sprint.30"
+            },
+            "timestamp": 1477519302868
+        }
+ ```
+* For each Spinnaker service whose Docker image is to be updated
+  * Edit spkr-XXX.yaml and replace the "image" property with the Docker image path desired
+    * e.g. for spkr-igor.yaml
+      * From
+		```image: bmcsoftware/spinnaker-igor:latest```
+      * To
+		```image: bmcsoftware/spinnaker-igor:0.0.1-sprint.30```
+  * Use kubectl to delete each of the Spinnaker Kubernetes replication controllers (rc)
+    * e.g.
+      * Get namespace from spkr-igor.yaml file in the "namespace" field
+        * e.g.
+          * ```namespace: spinnaker-192168217129-1477600173141```
+      * Delete existing Spinnaker service rc
+        * ```kubectl delete rc/spkr-igor-v000 --namespace=spinnaker-192168217129-1477600173141```
+  * Create the rcs from the lift-XXX-rc.yaml files
+    * e.g.
+      * ```kubectl create -f spkr-igor.yaml```
+    * Kubernetes will pull the new path for the Docker images for the Spinnaker service
+* Now make the Docker image path updates permanent so that the next Spinnaker stack update or new Spinnaker stack instance will use the desired Spinnaker Docker images
+  * Copy Spinnaker template yamls from Admiral container to host file system
+  ```
+    mkdir -p /opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs`
+	docker cp $(docker ps | grep 192.168.217.129:5000/cholin/lift-admiral:latest | awk '{print $1;}'):/opt/bmc/lift/kube/spinnaker/templates/rcs/. /opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs/.
+  ```
+  * Edit the rc yamls image paths in /opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs/ as before
+  * Edit the Lift Admiral rc yaml file to mount the updated Spinnaker template rc yaml files
+	`/opt/bmc/lift/installer.tmp/kubernetes/lift/rcs/lift-admiral-rc.yaml`
+    * Under "volumes:" add
+    ```
+      -
+        name: spkr-template-rcs
+        hostPath:
+          path:	/opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs
+    ```
+    * Under "volumeMounts:" add
+    ```
+    -
+      name: spkr-template-rcs
+      mountPath: /opt/bmc/lift/kube/spinnaker/templates/rcs
+    ```
+  * Use kubectl to delete each of the Lift Kubernetes replication controller for Admimral (rc)
+    * e.g.
+  ```kubectl delete rc/admiral --namespace=bmclift-ns```
+  * Create the rcs from the lift-admiral-rc.yaml files
+    * e.g.
+  ```kubectl create -f lift-admiral-rc.yaml```

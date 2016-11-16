@@ -7,7 +7,7 @@ Prerequisite:
 
 Run the following in a bash shell as root:
 
-`wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password '<DockerHub password>' --reg_email "<DockerHub registered e-mail address>"`
+`wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password '<DockerHub password>' --reg_email "<DockerHub registered e-mail address>" --default_tag "<release tag>"`
 
 ### Optional Arguments
 
@@ -56,11 +56,16 @@ Run the following in a bash shell as root:
                                 // image url.
     --lift_cassandra_url <arg>  // Internal usage. For specifying cassandra docker
                                 // image url.
+    --default_tag <arg>         // For specifying particular image tags to pull (both lift and spinnaker)
     --dbnode true/false         // Deprecated.
     --lift_download_url <arg>   // Default: https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest
                                 // Specifies where admiral will be downloading
                                 // lift installer from for remote hosts.
 ```
+
+### Example: To see install beta.1 
+```https://github.com/BMCSoftwareCTO/lift-install/releases/download/beta.1/liftinstall.sh | bash -s -- --reg_user "<user>" --reg_password "<password>" --reg_email "<email>" --default_tag 0.0.1-beta.1```
+
 ### Example: Installing BMC Lift with Optional Arguments
 ```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
 
@@ -69,6 +74,9 @@ Run the following in a bash shell as root:
 
 ### Example: To see installer help
 ```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh  | bash -s -- --help```
+
+
+
 
 ### Installation Directory
 

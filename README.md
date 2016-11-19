@@ -7,7 +7,8 @@ Prerequisite:
 
 Run the following in a bash shell as root:
 
-`wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password '<DockerHub password>' --reg_email "<DockerHub registered e-mail address>" --default_tag "<release tag>"`
+`export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/<release tag>; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/<release tag>/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password '<DockerHub password>' --reg_email "<DockerHub registered e-mail address>" --default_tag "<release tag>"`
+
 
 ### Optional Arguments
 
@@ -27,13 +28,16 @@ Run the following in a bash shell as root:
     --reg_password <arg>        // Docker registry user password for accessing BMC docker 
                                 // images.
     --reg_email <arg>           // Docker registry user email.
-    --dbdir <arg>               // Default is /. If specified, lift and spinnaker db files will be
+    --db_dir <arg>              // Default is /. If specified, lift and spinnaker db files will be
                                 // created under the specified directory. The directory will be created
-                                // if it doesn't exist.    
+                                // if it doesn't exist. 
+    --base_dir <arg>            // Default is standard /var/lib/... for Docker and Kubelet.  If specific, docker
+                                // and kubelet storage will move to the specific directory.  This must be the same
+                                // directory for all kuberenetes nodes and the master.   
     --ui_port <arg>             // Default is 8000. This is for spyglass client UI.
-    --api_port <arg>            // Default is 9080. This is for admiral service.
-    --aws_port <arg>            // Default is 9081. This is for aws service.
-    --ssh_port <arg>            // Default is 9082. This is for ssh service.
+    --api_port <arg>            // Default is 9080. This is for API service.
+    --aws_port <arg>            // Deprecated
+    --ssh_port <arg>            // Deprecated
     --port_range <arg>          // Default is "8000 9999"
                                 // Used to configure kubernetes api service where NodePort is 
                                 // used. This should be a string with min and max port range 
@@ -44,6 +48,8 @@ Run the following in a bash shell as root:
                                 // from. It should be in this format:
                                 // "<ip:port>,<ip2:port>..."
                                 // Example: "52.27.155.9:5000,172.22.238.229:5000"
+    --default_tag <arg>         // Default tag from DockerHub to pull for both lift and spinnaker. For Lift images,
+                                // it can be overwritten by specific urls lift_<service>_url
     --lift_aws_url <arg>        // Internal usage. For specifying aws service docker
                                 // image url.
                                 // Example: 
@@ -56,26 +62,26 @@ Run the following in a bash shell as root:
                                 // image url.
     --lift_cassandra_url <arg>  // Internal usage. For specifying cassandra docker
                                 // image url.
-    --default_tag <arg>         // For specifying particular image tags to pull (both lift and spinnaker)
     --dbnode true/false         // Deprecated.
     --lift_download_url <arg>   // Default: https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest
                                 // Specifies where admiral will be downloading
                                 // lift installer from for remote hosts.
+    --disable_lift_oauth        // Default lift_oauth is enabled. By passing in this flag (no args needed
+                                // after arg)
+    --client_secret <secret>    // The client secret that is issued by the OAuth provider. Valid only if -auth_enabled is true
 ```
 
-### Example: To see install beta.1 
-```https://github.com/BMCSoftwareCTO/lift-install/releases/download/beta.1/liftinstall.sh | bash -s -- --reg_user "<user>" --reg_password "<password>" --reg_email "<email>" --default_tag 0.0.1-beta.1```
+### Example: To install release tag 0.0.1-beta.2
+```export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/0.0.1-beta.2; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/0.0.1-beta.2/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password '<DockerHub password>' --reg_email "<DockerHub registered e-mail address>" --default_tag 0.0.1-beta.2```
 
-### Example: Installing BMC Lift with Optional Arguments
-```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
+### Example: Installing BMC Lift with Optional Arguments using release tag latest
+```export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --port_range "8000 9000" –ui_port 8081 –api_port 8099```
 
 ### Example: Installing BMC Lift NODE only
-```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
+```export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh | bash -s -- --install_type NODE --master_hostname my-kube-master-host --sky_dns 10.254.167.114```
 
 ### Example: To see installer help
-```wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh  | bash -s -- --help```
-
-
+```export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest/liftinstall.sh  | bash -s -- --help```
 
 
 ### Installation Directory
@@ -88,7 +94,7 @@ In the event that a Spinnaker configuration is not supported by BMC Lift, a Spin
 
 On machine where BMC Lift is installed perform the following steps:
 
-* Retrieving Amidral container ID
+* Retrieving Admiral container ID
   * Run `docker ps | grep admiral` and obtain the Admiral container ID
 * Copy template files from Admiral container
   * Run `mkdir spkr-templates`

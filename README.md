@@ -10,7 +10,7 @@ Run the following in a bash shell as root (substitute with appropriate values in
 `export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/<release tag>; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/<release tag>/liftinstall.sh | bash -s -- --reg_user "<DockerHub user>" --reg_password '<DockerHub password>' --reg_email "<DockerHub registered e-mail address>" --default_tag "<release tag>"`
 
 
-### Optional Arguments
+### Installer Arguments
 
 ```
     --help                      // this will display help info 

@@ -62,6 +62,10 @@ Run the following in a bash shell as root (substitute with appropriate values in
                                 // image url.
     --lift_cassandra_url <arg>  // Internal usage. For specifying cassandra docker
                                 // image url.
+    --aws_use_public_ip         // Default is false
+                                // If passed in, only matters when installing on an aws instance.
+                                // This flags whether or not to use
+                                // the public or private ip of the aws system to do install with
     --dbnode true/false         // Deprecated.
     --lift_download_url <arg>   // Default: https://github.com/BMCSoftwareCTO/lift-install/releases/download/latest
                                 // Specifies where admiral will be downloading

@@ -92,6 +92,69 @@ Run the following in a bash shell as root (substitute with appropriate values in
 
 `/opt/bmc/lift/installer`
 
+### Installing on AWS  
+Here are suggested steps for installing Lift on AWS.
+
+* Get AWS centos 7 ami image for lift installation (i.e. ami-acfd1fcc )
+* Associate instance with an elastic ip
+* Edit security group inbound rules to allow port access for  
+	```
+	9084 (lift)
+	
+	9080 (lift)
+	
+	8000 (lift)
+	
+	9000 (spinnaker)
+	
+	8084 (spinnaker)
+	
+	22
+	```
+* Perform following steps on the aws instance    
+    * Add following in your /etc/hosts, substituting with your instance's public ip  
+
+	```
+	sudo vi /etc/hosts
+	Add something like the following for your ip
+	[centos@ip-10-0y-0-34 ~]$ cat /etc/hosts
+	127.0.0.1 <public ip>
+	```  
+    * Allow password authentication  
+
+	```
+	sudo vi /etc/ssh/sshd_config
+	PasswordAuthentication yes
+	```   
+    * Set password  
+
+	```  
+	sudo passwd
+	sudo systemctl restart sshd
+	```  
+    * Disable selinux (reboot)  
+
+	```
+	sudo vi /etc/sysconfig/selinux
+	Set the flag to 'disabled' for SELINUX
+	reboot the system
+	```  
+    * install wget  
+
+	```
+	sudo yum -y update
+	sudo yum install wget
+	```
+    * update hostname  
+	Update the hostname to be the public ip(should be elastic ip) of the aws instance, in case it still isn't
+
+	```
+	hostname <public ip>
+	```
+* run lift installer as 'root'  (example)  
+export LIFT_DOWNLOAD_URL=https://github.com/BMCSoftwareCTO/lift-install/releases/download/RELEASE_VAL; wget -O - https://github.com/BMCSoftwareCTO/lift-install/releases/download/RELEASE_VAL/liftinstall.sh | bash -s -- --reg_user "YOUR_USRNAME" --reg_password "YOUR_PASSWD" --reg_email "YOUR_EMAIL"  --default_tag RELEASE_VAL --aws_use_public_ip 
+
+
 ## Configuring a Spinnaker Stack Outside of BMC Lift
 
 In the event that a Spinnaker configuration is not supported by BMC Lift, a Spinnaker stack that was deployed and configured via Lift can be reconfigured manually by following these steps:

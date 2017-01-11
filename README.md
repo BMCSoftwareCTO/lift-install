@@ -173,7 +173,7 @@ On machine where BMC Lift is installed perform the following steps:
 * Get Kubernetes update scripts
   * Make a temp directory
   * `git clone https://github.com/spinnaker/spinnaker.git` into the temp directory
-  * `cp <spinnaker repo dir>/experimental/kubernetes/scripts spkr-templates/.`
+  * `cp <spinnaker repo dir>/experimental/kubernetes/simple/scripts spkr-templates/.`
   * Edit spkr-templates/scripts/cleanup-config.sh and comment out the below with '#' characters:
   
 ```

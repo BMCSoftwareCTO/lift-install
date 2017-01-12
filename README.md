@@ -313,29 +313,17 @@ Kubernetes will pull the new path for the Docker images for each of the Lift rcs
     * e.g.
       * ```kubectl create -f spkr-igor.yaml```
     * Kubernetes will pull the new path for the Docker images for the Spinnaker service
-* Now make the Docker image path updates permanent so that the next Spinnaker stack update or new Spinnaker stack instance will use the desired Spinnaker Docker images
-  * Copy Spinnaker template yamls from Admiral container to host file system
-  ```
-    mkdir -p /opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs`
-	docker cp $(docker ps | grep 192.168.217.129:5000/cholin/lift-admiral:latest | awk '{print $1;}'):/opt/bmc/lift/kube/spinnaker/templates/rcs/. /opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs/.
-  ```
-  * Edit the rc yamls image paths in /opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs/ as before
-  * Edit the Lift Admiral rc yaml file to mount the updated Spinnaker template rc yaml files
+* Now make the Docker image path updates permanent so that the next Spinnaker stack update or new Spinnaker stack instance will use the desired Spinnaker Docker images  
+  * Edit the Lift Admiral rc yaml file to set the desired spinnaker image tag
 	`/opt/bmc/lift/installer.tmp/kubernetes/lift/rcs/lift-admiral-rc.yaml`
-    * Under "volumes:" add
+    * Under "env:" update SPKR_IMAGE_TAG
     ```
       -
-        name: spkr-template-rcs
-        hostPath:
-          path:	/opt/bmc/lift/installer.tmp/kubernetes/spinnaker/templates/rcs
+        name: SPKR_IMAGE_TAG
+        value: "0.0.1-sprint.30"
     ```
-    * Under "volumeMounts:" add
-    ```
-    -
-      name: spkr-template-rcs
-      mountPath: /opt/bmc/lift/kube/spinnaker/templates/rcs
-    ```
-  * Use kubectl to delete each of the Lift Kubernetes replication controller for Admimral (rc)
+   
+  * Use kubectl to delete the Lift Kubernetes replication controller for Admimral (rc)
     * e.g.
   ```kubectl delete rc/admiral --namespace=bmclift-ns```
   * Create the rcs from the lift-admiral-rc.yaml files

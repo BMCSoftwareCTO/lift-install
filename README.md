@@ -268,7 +268,7 @@ Kubernetes will pull the new path for the Docker images for each of the Lift rcs
 	 You will see some printout like the following, __NOTE__ down the namespace and id for next step. 
 	 ```
 	  name          | id                                   | namespace
-	  ---------------+--------------------------------------+---------------------------------------
+	 ---------------+--------------------------------------+---------------------------------------
 	  jianispintest | 8eb926e0-bc16-11e6-8c50-353e34a2a878 | spinnaker-jianispintest-1481071575274
 	 ```
  
@@ -306,12 +306,8 @@ Kubernetes will pull the new path for the Docker images for each of the Lift rcs
 		```image: bmcsoftware/spinnaker-igor:latest```
       * To
 		```image: bmcsoftware/spinnaker-igor:0.0.1-sprint.30```
-  * Use kubectl to delete each of the Spinnaker Kubernetes replication controllers (rc)
-    * e.g.
-      * Note the namespace we retrieved in earlier step
-        * e.g.
-          * ```spinnaker-jianispintest-1481071575274```
-      * Delete existing Spinnaker service rc
+  * Use kubectl to delete each of the Spinnaker Kubernetes replication controllers (rc)          
+      * Delete existing Spinnaker service rc, substitute namespace value with yours retrieved from earlier step
         * ```kubectl delete rc/spkr-igor-v000 --namespace=spinnaker-jianispintest-1481071575274```
   * Create the rcs from the lift-XXX-rc.yaml files
     * e.g.

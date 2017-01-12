@@ -249,45 +249,29 @@ Kubernetes will pull the new path for the Docker images for each of the Lift rcs
 		svc/spyglass-svc    10.254.39.138    <nodes>       8000/TCP   4h
 		svc/ssh-svc         10.254.155.21    <none>        9082/TCP   4h
     ```
-* List Spinnaker instances to a file
-  * e.g.
-    * `curl http://10.254.115.22:9083/v1/spinnakers >spinnakers.json`
-    * Use a JSON-pretty tool to make it readable
-      * e.g.
-      ```
-			[
-			  {
-			    "id": "11bcc9a0-9c84-11e6-8fab-316805b20aec",
-			    "name": "192.168.217.129",
-			    "status": "Failed",
-			    "size": "small",
-			    "deckurl": "http://192.168.217.129:9000",
-			    "providers": [
-			      "11abb2a0-9c84-11e6-8fab-316805b20aec",
-			      "ef4d05b0-9c83-11e6-8fab-316805b20aec"
-			    ],
-			    "accounts": [
-			      "11ac27d0-9c84-11e6-8fab-316805b20aec",
-			      "ef4c6970-9c83-11e6-8fab-316805b20aec"
-			    ],
-			    "credentials": null,
-			    "hosts": [
-			      "10d576e0-9c84-11e6-8fab-316805b20aec"
-			    ],
-			    "integrations": null,
-			    "notifications": null,
-			    "authentications": null,
-			    "deckHost": "192.168.217.129",
-			    "namespace": "spinnaker-192168217129-1477600173141",
-			    "gatePort": "8084",
-			    "deckPort": "9000",
-			    "roscoPort": "8087"
-			  }
-			]
-      ```
-* Pick Spinnaker instance id where the name attribute matches the Spinnaker stack whose Docker images are to be updated
-  * e.g.
-    * ```"id": "11bcc9a0-9c84-11e6-8fab-316805b20aec",```
+* Get spinnaker namespace and instance ID 
+    * Find out your Cassandra container image and set env var for it  
+
+	 ```
+	 docker ps | grep cassandra
+	 export CASSANDRA_IMAGE=<YOUR CASSANDRA IMAGE>
+	 (i.e. export CASSANDRA_IMAGE=bmcsoftware/lift-cassandra:0.0.1-beta.2)
+	 ```
+    * Get the namespace and id for the spinnaker name that you are interested
+
+	 ```
+	 docker exec -it $(docker ps | grep $CASSANDRA_IMAGE | awk '{print $1;}') cqlsh
+	 use admiral;
+	 select name,id,namespace from spinnaker;
+	 exit;
+	 ```
+	 You will see some printout like the following, __NOTE__ down the namespace and id for next step. 
+	 ```
+	  name          | id                                   | namespace
+	  ---------------+--------------------------------------+---------------------------------------
+	  jianispintest | 8eb926e0-bc16-11e6-8c50-353e34a2a878 | spinnaker-jianispintest-1481071575274
+	 ```
+ 
 * Get Lift admiral Docker image path
   * `kubectl get po --namespace=bmclift-ns | grep admiral`
     * e.g.
@@ -295,8 +279,8 @@ Kubernetes will pull the new path for the Docker images for each of the Lift rcs
 * `kubectl get po/admiral-z0tnp -o jsonpath={.spec.containers[*].image} --namespace=bmclift-ns`
   * e.g.
         ```192.168.217.129:5000/cholin/lift-admiral:latest```
-* Copy Spinnaker rc files for Spinnaker stack from admiral Docker container to current directory (tmp)
-  * `docker cp $(docker ps | grep 192.168.217.129:5000/cholin/lift-admiral:latest | awk '{print $1;}'):/opt/bmc/lift/kube/spinnaker/templates/11bcc9a0-9c84-11e6-8fab-316805b20aec/rcs/. .`
+* Copy Spinnaker rc files for Spinnaker stack from admiral Docker container to current directory (tmp). Substitute the id below with your spinnaker id.
+  * `docker cp $(docker ps | grep 192.168.217.129:5000/cholin/lift-admiral:latest | awk '{print $1;}'):/opt/bmc/lift/kube/spinnaker/templates/8eb926e0-bc16-11e6-8c50-353e34a2a878/rcs/. .`
 * Get manifest of Spinnaker Docker image versions
   * `curl https://github.com/BMCSoftwareCTO/lift-install/releases/download/spkr-versions/snapshots.json`
   * Each entry looks like:
@@ -324,11 +308,11 @@ Kubernetes will pull the new path for the Docker images for each of the Lift rcs
 		```image: bmcsoftware/spinnaker-igor:0.0.1-sprint.30```
   * Use kubectl to delete each of the Spinnaker Kubernetes replication controllers (rc)
     * e.g.
-      * Get namespace from spkr-igor.yaml file in the "namespace" field
+      * Note the namespace we retrieved in earlier step
         * e.g.
-          * ```namespace: spinnaker-192168217129-1477600173141```
+          * ```spinnaker-jianispintest-1481071575274```
       * Delete existing Spinnaker service rc
-        * ```kubectl delete rc/spkr-igor-v000 --namespace=spinnaker-192168217129-1477600173141```
+        * ```kubectl delete rc/spkr-igor-v000 --namespace=spinnaker-jianispintest-1481071575274```
   * Create the rcs from the lift-XXX-rc.yaml files
     * e.g.
       * ```kubectl create -f spkr-igor.yaml```

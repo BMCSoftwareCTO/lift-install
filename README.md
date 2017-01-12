@@ -181,8 +181,10 @@ On machine where BMC Lift is installed perform the following steps:
      for FILENAME in $CONF_DIR*.yml; do
        rm config/${FILENAME:${#CONF_DIR}}
      Done
-```
-* Update Spinnaker stack configuration
+```  
+  * Also edit cleanup-config.sh, startup-config.sh, and cleanup-spinnaker.sh by updating the namespace values from "spinnaker" to your spinnaker namespace value.  
+  
+* Update Spinnaker stack configuration  
   * Run `cd spkr-templates`
   * Run `bash scripts/update-config.sh`
   * Run `bash scripts/update-spinnaker.sh`
